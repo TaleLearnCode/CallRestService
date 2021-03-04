@@ -21,7 +21,19 @@ namespace CallRestService
 				switch (ProvideMenuOptions())
 				{
 					case MenuOption.CurrentTemperature:
-						Console.WriteLine($"The current temperature is {await GetCurrentTemperature()}");
+						string results = await GetCurrentTemperature();
+						if (results != default)
+
+						{
+							Console.WriteLine($"The current temperature is {results}"); 
+						}
+						else
+						{
+							ConsoleColor foregroundColor = Console.ForegroundColor;
+							Console.ForegroundColor = ConsoleColor.Red;
+							Console.WriteLine("Unable to retrieve weather data...");
+							Console.ForegroundColor = foregroundColor;
+						}
 						Console.WriteLine("Press any key continue...");
 						Console.ReadKey();
 						break;
@@ -56,12 +68,13 @@ namespace CallRestService
 				Console.WriteLine(@" \______  /\____/\____ |\___  > |_______ \____/|____/|__/____  >  \_/ |__|____/____/\___  >");
 				Console.WriteLine(@"        \/            \/    \/          \/                   \/                         \/ "); Console.WriteLine();
 				Console.WriteLine();
-				Console.ForegroundColor = ConsoleColor.DarkMagenta;
+				Console.ForegroundColor = ConsoleColor.DarkCyan;
 				Console.WriteLine("Choose the demo to run:");
-				Console.ForegroundColor = ConsoleColor.Magenta;
+				Console.ForegroundColor = ConsoleColor.Cyan;
 				Console.WriteLine("\t [1]  Get Current Temperature");
 				Console.WriteLine("\t [2]  Convert Temperature");
 				Console.WriteLine("\t[ESC] Exit demo");
+				Console.ForegroundColor = foregroundColor;
 				var keyPress = Console.ReadKey(true);
 				switch (keyPress.Key)
 				{
@@ -87,16 +100,20 @@ namespace CallRestService
 		private static TemperatureUnit GetTemperatureUnit()
 		{
 			int returnValue = -1;
+			ConsoleColor foregroundColor = Console.ForegroundColor;
 
 			int minTemperatureUnitValue = (int)Enum.GetValues(typeof(TemperatureUnit)).Cast<TemperatureUnit>().First();
 			int maxTemperatureUnitValue = (int)Enum.GetValues(typeof(TemperatureUnit)).Cast<TemperatureUnit>().Last();
 			while (returnValue < minTemperatureUnitValue + 1 || returnValue > maxTemperatureUnitValue)
 			{
+				Console.WriteLine();
+				Console.ForegroundColor = ConsoleColor.DarkYellow;
 				Console.WriteLine("Choose the temperature unit to return:");
-				Console.ForegroundColor = ConsoleColor.Magenta;
+				Console.ForegroundColor = ConsoleColor.Yellow;
 				Console.WriteLine("\t [1]  Kelvin");
 				Console.WriteLine("\t [2]  Fahrenheit");
 				Console.WriteLine("\t [3]  Celsius");
+				Console.ForegroundColor = foregroundColor;
 				var keyPress = Console.ReadKey(true);
 				return keyPress.Key switch
 				{
@@ -111,9 +128,6 @@ namespace CallRestService
 			return (TemperatureUnit)returnValue;
 
 		}
-
-
-		// TODO: Make unit selectable
 
 		private static double ConvertKelvinToFahrenheit(double kelvin)
 		{
@@ -132,17 +146,27 @@ namespace CallRestService
 			Console.Write("Location: ");
 			string location = Console.ReadLine();
 			TemperatureUnit temperatureUnit = GetTemperatureUnit();
+
+			Console.WriteLine();
+			Console.WriteLine("Retrieving weather data...");
 			WeatherResults weatherResults = await GetAPIData(location, temperatureUnit);
 
-			double temperature = weatherResults.CurrentConditions.Temperature;
-			return temperatureUnit switch
+			if (weatherResults != default)
 			{
-				TemperatureUnit.Celsius => $"{temperature} C",
-				TemperatureUnit.Fahrenheit => $"{temperature} F",
-				TemperatureUnit.Kelvin => $"{temperature} K",
-				_ => temperature.ToString()
-			};
+				double temperature = weatherResults.CurrentConditions.Temperature;
+				return temperatureUnit switch
+				{
+					TemperatureUnit.Celsius => $"{temperature} C",
+					TemperatureUnit.Fahrenheit => $"{temperature} F",
+					TemperatureUnit.Kelvin => $"{temperature} K",
+					_ => temperature.ToString()
+				};
 
+			}
+			else
+			{
+				return default;
+			}
 		}
 
 		private static async Task<WeatherResults> GetAPIData(string location, TemperatureUnit temperatureUnit)
@@ -159,8 +183,15 @@ namespace CallRestService
 			_httpClient.DefaultRequestHeaders.Accept.Clear();
 			_httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-			return await _httpClient.GetFromJsonAsync<WeatherResults>(apiUrl);
-		
+			try
+			{
+				return await _httpClient.GetFromJsonAsync<WeatherResults>(apiUrl);
+			}
+			catch (HttpRequestException)
+			{
+				return default;
+			}
+
 
 		}
 
