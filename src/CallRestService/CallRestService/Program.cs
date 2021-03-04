@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CallRestService
@@ -262,16 +265,39 @@ namespace CallRestService
 			{
 				return await _httpClient.GetFromJsonAsync<WeatherResults>(apiUrl);
 			}
-			catch (HttpRequestException)
+			catch (HttpRequestException ex)
 			{
+
+				Dictionary<string, string> inputParameters = new();
+				inputParameters.Add("location", location);
+				inputParameters.Add("temperatureUnit", temperatureUnit.ToString());
+				LogError("GetAPIData", inputParameters, ex);
+
 				return default;
 			}
 
 
 		}
 
+		private static void LogError(string source, Dictionary<string, string> inputParameters, Exception exception)
+		{
+			StringBuilder logEntry = new();
+			logEntry.AppendLine($"Source: {source}");
+			logEntry.AppendLine($"Date/Time: {DateTime.UtcNow}");
+			logEntry.AppendLine($"Exception: {exception.GetType()}");
+			logEntry.AppendLine($"Exception Message: {exception.Message}");
+			if (inputParameters.Any())
+			{
+				logEntry.AppendLine("Input Parameters:");
+				foreach (KeyValuePair<string, string> inputParameter in inputParameters)
+				{
+					logEntry.AppendLine($"\t{inputParameter.Key} :: {inputParameter.Value}");
+				}
+			}
+			logEntry.AppendLine();
+			File.AppendAllText("Error.log", logEntry.ToString());
+		}
 
 	}
-
 
 }
