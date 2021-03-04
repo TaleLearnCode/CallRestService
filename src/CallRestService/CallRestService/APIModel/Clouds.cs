@@ -1,9 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CallRestService
+namespace CallRestService.APIModel
 {
-	partial class Program
-	{
 
 		public class Clouds
 		{
@@ -11,8 +9,6 @@ namespace CallRestService
 			public int Cloudiness { get; set; }
 		}
 
-
-	}
 
 
 }

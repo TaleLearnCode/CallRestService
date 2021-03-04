@@ -1,9 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CallRestService
+namespace CallRestService.APIModel
 {
-	partial class Program
-	{
+
 		public class Weather
     {
       
@@ -20,10 +19,5 @@ namespace CallRestService
       public string Icon { get; set; }
 
     }
-
-
-
-  }
-
 
 }

@@ -1,9 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CallRestService
+namespace CallRestService.APIModel
 {
-	partial class Program
-	{
 		public class CurrentConditions
 		{
 
@@ -25,10 +23,5 @@ namespace CallRestService
 			[JsonPropertyName("humidity")]
 			public int Humidity { get; set; }
 		}
-
-
-
-	}
-
 
 }

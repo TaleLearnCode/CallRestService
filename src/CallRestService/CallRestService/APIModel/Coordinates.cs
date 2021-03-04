@@ -1,9 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CallRestService
+namespace CallRestService.APIModel
 {
-	partial class Program
-	{
 		public class Coordinates
 		{
 			[JsonPropertyName("lon")]
@@ -12,8 +10,5 @@ namespace CallRestService
 			[JsonPropertyName("lat")]
 			public double Latitude { get; set; }
 		}
-
-	}
-
 
 }

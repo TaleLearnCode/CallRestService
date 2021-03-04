@@ -1,9 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CallRestService
+namespace CallRestService.APIModel
 {
-	partial class Program
-	{
 		public class Wind
 		{
 			[JsonPropertyName("speed")]
@@ -12,10 +10,5 @@ namespace CallRestService
 			[JsonPropertyName("deg")]
 			public int Deg { get; set; }
 		}
-
-
-
-	}
-
 
 }

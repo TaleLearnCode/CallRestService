@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CallRestService.APIModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,12 +11,11 @@ using System.Threading.Tasks;
 
 namespace CallRestService
 {
-	partial class Program
+	public class Program
 	{
 
 		private static readonly HttpClient _httpClient = new HttpClient();
 		private const string _unableToConvertTemperature = "Unable to convert temperature";
-
 
 		static async Task Main(string[] args)
 		{
@@ -134,36 +134,6 @@ namespace CallRestService
 
 		}
 
-		private static double ConvertKelvinToFahrenheit(double kelvin)
-		{
-			return kelvin * 1.8 - 459.67;
-		}
-
-		private static double ConvertKelvinToCelsius(double kelvin)
-		{
-			return kelvin - 273.15;
-		}
-
-		private static double ConvertFahrenheitToKelvin(double fahrenheit)
-		{
-			return (fahrenheit + 459.67) / 1.8;
-		}
-
-		private static double ConvertFahrenheitToCelsuis(double fahrenheit)
-		{
-			return (fahrenheit - 32) / 1.8;
-		}
-
-		private static double ConvertCelsiusToKelvin(double celsius)
-		{
-			return celsius + 273.15;
-		}
-
-		private static double ConvertCelsiusToFahrenheit(double celsius)
-		{
-			return celsius * 1.8 + 32;
-		}
-
 		private static async Task<string> GetCurrentTemperature()
 		{
 			Console.WriteLine();
@@ -237,6 +207,36 @@ namespace CallRestService
 					return _unableToConvertTemperature;
 			}
 
+		}
+
+		private static double ConvertKelvinToFahrenheit(double kelvin)
+		{
+			return kelvin * 1.8 - 459.67;
+		}
+
+		private static double ConvertKelvinToCelsius(double kelvin)
+		{
+			return kelvin - 273.15;
+		}
+
+		private static double ConvertFahrenheitToKelvin(double fahrenheit)
+		{
+			return (fahrenheit + 459.67) / 1.8;
+		}
+
+		private static double ConvertFahrenheitToCelsuis(double fahrenheit)
+		{
+			return (fahrenheit - 32) / 1.8;
+		}
+
+		private static double ConvertCelsiusToKelvin(double celsius)
+		{
+			return celsius + 273.15;
+		}
+
+		private static double ConvertCelsiusToFahrenheit(double celsius)
+		{
+			return celsius * 1.8 + 32;
 		}
 
 		private static void PrintErrorMessage(string errorMessage)
