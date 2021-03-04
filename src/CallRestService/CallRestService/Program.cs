@@ -14,10 +14,10 @@ namespace CallRestService
 	public class Program
 	{
 
-		private static readonly HttpClient _httpClient = new HttpClient();
+		private static readonly HttpClient _httpClient = new();
 		private const string _unableToConvertTemperature = "Unable to convert temperature";
 
-		static async Task Main(string[] args)
+		static async Task Main()
 		{
 			var exit = false;
 			while (!exit)
@@ -177,36 +177,31 @@ namespace CallRestService
 			// TODO: Add input validation
 
 			double valueToConvert = Convert.ToDouble(inputToConvert);
-			switch (originTemperatureUnit)
+			return originTemperatureUnit switch
 			{
-				case TemperatureUnit.Kelvin:
-					return destinationTemperatureUnit switch
-					{
-						TemperatureUnit.Celsius => $"{ConvertKelvinToCelsius(valueToConvert):0.##}° C",
-						TemperatureUnit.Fahrenheit => $"{ConvertKelvinToFahrenheit(valueToConvert):0.##}° F",
-						TemperatureUnit.Kelvin => $"{inputToConvert} K",
-						_ => _unableToConvertTemperature
-					};
-				case TemperatureUnit.Celsius:
-					return destinationTemperatureUnit switch
-					{
-						TemperatureUnit.Celsius => $"{inputToConvert}° C",
-						TemperatureUnit.Fahrenheit => $"{ConvertCelsiusToFahrenheit(valueToConvert):0.##}° F",
-						TemperatureUnit.Kelvin => $"{ConvertCelsiusToKelvin(valueToConvert):0.##} K",
-						_ => _unableToConvertTemperature
-					};
-				case TemperatureUnit.Fahrenheit:
-					return destinationTemperatureUnit switch
-					{
-						TemperatureUnit.Celsius => $"{ConvertFahrenheitToCelsuis(valueToConvert):0.##}° C",
-						TemperatureUnit.Fahrenheit => $"{inputToConvert}° F",
-						TemperatureUnit.Kelvin => $"{ConvertFahrenheitToKelvin(valueToConvert):0.##} K",
-						_ => _unableToConvertTemperature
-					};
-				default:
-					return _unableToConvertTemperature;
-			}
-
+				TemperatureUnit.Kelvin => destinationTemperatureUnit switch
+				{
+					TemperatureUnit.Celsius => $"{ConvertKelvinToCelsius(valueToConvert):0.##}° C",
+					TemperatureUnit.Fahrenheit => $"{ConvertKelvinToFahrenheit(valueToConvert):0.##}° F",
+					TemperatureUnit.Kelvin => $"{inputToConvert} K",
+					_ => _unableToConvertTemperature
+				},
+				TemperatureUnit.Celsius => destinationTemperatureUnit switch
+				{
+					TemperatureUnit.Celsius => $"{inputToConvert}° C",
+					TemperatureUnit.Fahrenheit => $"{ConvertCelsiusToFahrenheit(valueToConvert):0.##}° F",
+					TemperatureUnit.Kelvin => $"{ConvertCelsiusToKelvin(valueToConvert):0.##} K",
+					_ => _unableToConvertTemperature
+				},
+				TemperatureUnit.Fahrenheit => destinationTemperatureUnit switch
+				{
+					TemperatureUnit.Celsius => $"{ConvertFahrenheitToCelsuis(valueToConvert):0.##}° C",
+					TemperatureUnit.Fahrenheit => $"{inputToConvert}° F",
+					TemperatureUnit.Kelvin => $"{ConvertFahrenheitToKelvin(valueToConvert):0.##} K",
+					_ => _unableToConvertTemperature
+				},
+				_ => _unableToConvertTemperature,
+			};
 		}
 
 		private static double ConvertKelvinToFahrenheit(double kelvin)
