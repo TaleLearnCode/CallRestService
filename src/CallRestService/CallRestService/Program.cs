@@ -11,6 +11,7 @@ namespace CallRestService
 	{
 
 		private static readonly HttpClient _httpClient = new HttpClient();
+		private const string _unableToConvertTemperature = "Unable to convert temperature";
 
 
 		static async Task Main(string[] args)
@@ -23,17 +24,18 @@ namespace CallRestService
 					case MenuOption.CurrentTemperature:
 						string results = await GetCurrentTemperature();
 						if (results != default)
-
-						{
-							Console.WriteLine($"The current temperature is {results}"); 
-						}
+							Console.WriteLine($"The current temperature is {results}");
 						else
-						{
-							ConsoleColor foregroundColor = Console.ForegroundColor;
-							Console.ForegroundColor = ConsoleColor.Red;
-							Console.WriteLine("Unable to retrieve weather data...");
-							Console.ForegroundColor = foregroundColor;
-						}
+							PrintErrorMessage("Unable to retrieve weather data...");
+						Console.WriteLine("Press any key continue...");
+						Console.ReadKey();
+						break;
+					case MenuOption.ConvertTemperature:
+						string convertResults = ConvertTemperature();
+						if (convertResults != _unableToConvertTemperature)
+							Console.WriteLine($"Converted temperature is {convertResults}");
+						else
+							PrintErrorMessage(convertResults);
 						Console.WriteLine("Press any key continue...");
 						Console.ReadKey();
 						break;
@@ -97,7 +99,7 @@ namespace CallRestService
 
 		}
 
-		private static TemperatureUnit GetTemperatureUnit()
+		private static TemperatureUnit GetTemperatureUnit(string message)
 		{
 			int returnValue = -1;
 			ConsoleColor foregroundColor = Console.ForegroundColor;
@@ -108,7 +110,7 @@ namespace CallRestService
 			{
 				Console.WriteLine();
 				Console.ForegroundColor = ConsoleColor.DarkYellow;
-				Console.WriteLine("Choose the temperature unit to return:");
+				Console.WriteLine(message);
 				Console.ForegroundColor = ConsoleColor.Yellow;
 				Console.WriteLine("\t [1]  Kelvin");
 				Console.WriteLine("\t [2]  Fahrenheit");
@@ -136,7 +138,27 @@ namespace CallRestService
 
 		private static double ConvertKelvinToCelsius(double kelvin)
 		{
-			return kelvin * 1.8 + 32;
+			return kelvin - 273.15;
+		}
+
+		private static double ConvertFahrenheitToKelvin(double fahrenheit)
+		{
+			return (fahrenheit + 459.67) / 1.8;
+		}
+
+		private static double ConvertFahrenheitToCelsuis(double fahrenheit)
+		{
+			return (fahrenheit - 32) / 1.8;
+		}
+
+		private static double ConvertCelsiusToKelvin(double celsius)
+		{
+			return celsius + 273.15;
+		}
+
+		private static double ConvertCelsiusToFahrenheit(double celsius)
+		{
+			return celsius * 1.8 + 32;
 		}
 
 		private static async Task<string> GetCurrentTemperature()
@@ -145,7 +167,7 @@ namespace CallRestService
 			Console.WriteLine();
 			Console.Write("Location: ");
 			string location = Console.ReadLine();
-			TemperatureUnit temperatureUnit = GetTemperatureUnit();
+			TemperatureUnit temperatureUnit = GetTemperatureUnit("Choose the temperature unit to return:");
 
 			Console.WriteLine();
 			Console.WriteLine("Retrieving weather data...");
@@ -156,8 +178,8 @@ namespace CallRestService
 				double temperature = weatherResults.CurrentConditions.Temperature;
 				return temperatureUnit switch
 				{
-					TemperatureUnit.Celsius => $"{temperature} C",
-					TemperatureUnit.Fahrenheit => $"{temperature} F",
+					TemperatureUnit.Celsius => $"{temperature}° C",
+					TemperatureUnit.Fahrenheit => $"{temperature}° F",
 					TemperatureUnit.Kelvin => $"{temperature} K",
 					_ => temperature.ToString()
 				};
@@ -167,6 +189,59 @@ namespace CallRestService
 			{
 				return default;
 			}
+		}
+
+		private static string ConvertTemperature()
+		{
+
+			Console.WriteLine();
+			Console.WriteLine();
+			TemperatureUnit originTemperatureUnit = GetTemperatureUnit("Origin Temperature Unit: ");
+			TemperatureUnit destinationTemperatureUnit = GetTemperatureUnit("Destination Temperature Unit: ");
+			Console.WriteLine();
+			Console.Write("Value to Convert: ");
+			string inputToConvert = Console.ReadLine();
+			// TODO: Add input validation
+
+			double valueToConvert = Convert.ToDouble(inputToConvert);
+			switch (originTemperatureUnit)
+			{
+				case TemperatureUnit.Kelvin:
+					return destinationTemperatureUnit switch
+					{
+						TemperatureUnit.Celsius => $"{ConvertKelvinToCelsius(valueToConvert):0.##}° C",
+						TemperatureUnit.Fahrenheit => $"{ConvertKelvinToFahrenheit(valueToConvert):0.##}° F",
+						TemperatureUnit.Kelvin => $"{inputToConvert} K",
+						_ => _unableToConvertTemperature
+					};
+				case TemperatureUnit.Celsius:
+					return destinationTemperatureUnit switch
+					{
+						TemperatureUnit.Celsius => $"{inputToConvert}° C",
+						TemperatureUnit.Fahrenheit => $"{ConvertCelsiusToFahrenheit(valueToConvert):0.##}° F",
+						TemperatureUnit.Kelvin => $"{ConvertCelsiusToKelvin(valueToConvert):0.##} K",
+						_ => _unableToConvertTemperature
+					};
+				case TemperatureUnit.Fahrenheit:
+					return destinationTemperatureUnit switch
+					{
+						TemperatureUnit.Celsius => $"{ConvertFahrenheitToCelsuis(valueToConvert):0.##}° C",
+						TemperatureUnit.Fahrenheit => $"{inputToConvert}° F",
+						TemperatureUnit.Kelvin => $"{ConvertFahrenheitToKelvin(valueToConvert):0.##} K",
+						_ => _unableToConvertTemperature
+					};
+				default:
+					return _unableToConvertTemperature;
+			}
+
+		}
+
+		private static void PrintErrorMessage(string errorMessage)
+		{
+			ConsoleColor foregroundColor = Console.ForegroundColor;
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine(errorMessage);
+			Console.ForegroundColor = foregroundColor;
 		}
 
 		private static async Task<WeatherResults> GetAPIData(string location, TemperatureUnit temperatureUnit)
