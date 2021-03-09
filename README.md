@@ -19,7 +19,7 @@ In order to run this application, you will need to perform the following steps:
 
 Weather locations can be a ZIP code or a city.  When specifying a city and state, you must also specify the country.  For example, specify `Louisville, KY, US` instead of `Louisville, KY`.  But note that some cities (such as Louisville) works correctly if you simply enter `Louisville`.  This is API dependent.
 
-Any errors (such as weather location not found) will be recorded within the bin folder of the application in the `Error.log` file.
+Any errors (such as weather location not found) will be recorded within the `bin` folder of the application in the `Error.log` file.
 
 ### Code Louisville Feature Matrix
 
