@@ -25,7 +25,7 @@ Any errors (such as weather location not found) will be recorded within the `bin
 
 - [x] Implement a “master loop” console application where the user can repeatedly enter commands/perform actions, including choosing to exit the program
 - [ ] Create an additional class which inherits one or more properties from its parent
-- [ ] Create a dictionary or list, populate it with several values, retrieve at least one value, and use it in your program
+- [x] Create a dictionary or list, populate it with several values, retrieve at least one value, and use it in your program
 - [x] Implement a log that records errors, invalid inputs, or other important events and writes them to a text file
 - [ ] Read data from an external file, such as text, JSON, CSV, etc and use that data in your application
 - [ ] Implement a regular expression (regex) to ensure a field either a phone number or an email address is always stored and displayed in the same format
